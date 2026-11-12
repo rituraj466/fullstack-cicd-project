@@ -1,59 +1,46 @@
+
 pipeline {
     agent any
-    options {
-        timestamps()
-        disableConcurrentBuilds()
-    }
+
     triggers {
         githubPush()
     }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        stage('Check Frontend Changes') {
-            steps {
-                script {
-                    def changed = sh(
-                        script: "git diff-tree --no-commit-id --name-only -r HEAD",
-                        returnStdout: true
-                    ).trim()
-                    if (currentBuild.previousBuild == null ||
-                        changed.split('\\n').any { it.startsWith('frontend/') || it == 'docker-compose.yml' }) {
-                        env.DEPLOY_FRONTEND = 'true'
-                    } else {
-                        env.DEPLOY_FRONTEND = 'false'
-                        echo 'No frontend files changed; skipping frontend deployment.'
-                    }
-                }
-            }
-        }
+
         stage('Build and Validate Frontend') {
-            when { expression { env.DEPLOY_FRONTEND == 'true' } }
             steps {
-                dir('frontend') {
+                dir('fullstack-cicd-project/frontend') {
                     sh 'npm install'
                     sh 'npm run build'
                 }
             }
         }
+
         stage('Build Frontend Docker Image') {
-            when { expression { env.DEPLOY_FRONTEND == 'true' } }
             steps {
-                sh 'docker build -t fullstack-frontend:latest ./frontend'
+                sh 'docker build -t fullstack-frontend:latest fullstack-cicd-project/frontend'
             }
         }
+
         stage('Deploy Frontend') {
-            when { expression { env.DEPLOY_FRONTEND == 'true' } }
             steps {
-                sh 'docker compose up -d --no-deps frontend'
+                sh 'docker compose -p fullstack -f fullstack-cicd-project/docker-compose.yml up -d --no-deps frontend'
             }
         }
     }
+
     post {
-        success { echo 'Frontend pipeline completed successfully.' }
-        failure { echo 'Frontend pipeline failed. Check the console output.' }
+        success {
+            echo 'Frontend pipeline completed successfully!'
+        }
+        failure {
+            echo 'Frontend pipeline failed. Check the console output.'
+        }
     }
 }
