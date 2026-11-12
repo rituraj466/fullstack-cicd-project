@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+    triggers {
+        githubPush()
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Check Backend Changes') {
+            steps {
+                script {
+                    def changed = sh(
+                        script: "git diff-tree --no-commit-id --name-only -r HEAD",
+                        returnStdout: true
+                    ).trim()
+                    if (currentBuild.previousBuild == null ||
+                        changed.split('\\n').any { it.startsWith('backend/') || it == 'docker-compose.yml' }) {
+                        env.DEPLOY_BACKEND = 'true'
+                    } else {
+                        env.DEPLOY_BACKEND = 'false'
+                        echo 'No backend files changed; skipping backend deployment.'
+                    }
+                }
+            }
+        }
+        stage('Install Dependencies and Test Backend') {
+            when { expression { env.DEPLOY_BACKEND == 'true' } }
+            steps {
+                dir('backend') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+            }
+        }
+        stage('Build Backend Docker Image') {
+            when { expression { env.DEPLOY_BACKEND == 'true' } }
+            steps {
+                sh 'docker build -t fullstack-backend:latest ./backend'
+            }
+        }
+        stage('Deploy Backend') {
+            when { expression { env.DEPLOY_BACKEND == 'true' } }
+            steps {
+                sh 'docker compose up -d --no-deps backend'
+            }
+        }
+    }
+    post {
+        success { echo 'Backend pipeline completed successfully.' }
+        failure { echo 'Backend pipeline failed. Check the console output.' }
+    }
+}

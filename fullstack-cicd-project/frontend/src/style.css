@@ -1,0 +1,29 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f3f6fb;
+  color: #182230;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.container { width: min(900px, 92%); margin: 60px auto; }
+header { margin-bottom: 28px; }
+.eyebrow { color: #2563eb; font-size: 12px; font-weight: 700; letter-spacing: 2px; }
+h1 { margin: 8px 0; font-size: clamp(32px, 5vw, 46px); }
+.subtitle { color: #64748b; }
+.status {
+  display: flex; align-items: center; gap: 10px;
+  padding: 15px 18px; border-radius: 10px;
+  background: #e8f7ee; color: #166534; margin-bottom: 22px;
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #16a34a; }
+.panel { background: white; padding: 25px; border-radius: 14px; box-shadow: 0 8px 28px #0f172a0c; }
+.panel h2 { margin-top: 0; }
+.employees { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.employee { display: flex; gap: 14px; align-items: center; border: 1px solid #e5eaf1; border-radius: 10px; padding: 15px; }
+.avatar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #dbeafe; color: #1d4ed8; font-weight: 700; }
+.employee h3 { margin: 0 0 5px; }
+.employee p, .employee small { margin: 0; color: #64748b; }
+.employee small { display: inline-block; margin-top: 5px; }
+.empty { color: #64748b; }
+footer { text-align: center; margin-top: 25px; color: #64748b; font-size: 13px; }

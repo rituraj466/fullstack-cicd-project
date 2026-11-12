@@ -1,0 +1,16 @@
+services:
+  backend:
+    image: fullstack-backend:latest
+    container_name: fullstack-backend
+    restart: unless-stopped
+    expose:
+      - "5000"
+
+  frontend:
+    image: fullstack-frontend:latest
+    container_name: fullstack-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
