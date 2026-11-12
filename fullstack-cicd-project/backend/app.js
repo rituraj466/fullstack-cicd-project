@@ -4,9 +4,9 @@ const app = express();
 app.use(express.json());
 
 const employees = [
-  { id: 1, name: "Aarav Sharma", role: "DevOps Engineer", email: "aarav@example.com" },
-  { id: 2, name: "Priya Singh", role: "Frontend Developer", email: "priya@example.com" },
-  { id: 3, name: "Rahul Verma", role: "Backend Developer", email: "rahul@example.com" }
+  { id: 1, name: "Rituraj", role: "DevOps Engineer", email: "rituraj@example.com" },
+  { id: 2, name: "Rituraj", role: "Frontend Developer", email: "ritu@example.com" },
+  { id: 3, name: "Sinha", role: "Backend Developer", email: "sinha@example.com" }
 ];
 
 app.get("/api/health", (req, res) => {
